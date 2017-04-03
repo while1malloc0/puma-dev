@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -39,6 +40,16 @@ func main() {
 	flag.Parse()
 
 	allCheck()
+
+	edomains, defined := os.LookupEnv("PUMA_DEV_DOMAINS")
+	if defined {
+		*fDomains = edomains
+	}
+
+	edir, defined := os.LookupEnv("PUMA_DEV_DIR")
+	if defined {
+		*fDir = edir
+	}
 
 	if *fPow {
 		*fDomains = "dev"
@@ -112,6 +123,14 @@ func main() {
 		os.Exit(0)
 	}()
 
+	eport, defined := os.LookupEnv("PUMA_DEV_DNS_PORT")
+	if defined {
+		*fPort, err = strconv.Atoi(eport)
+		if err != nil {
+			log.Fatalf("Invalid value %s for PUMA_DEV_DNS_PORT", eport)
+		}
+	}
+
 	err = dev.ConfigureResolver(domains, *fPort)
 	if err != nil {
 		log.Fatalf("Unable to configure OS X resolver: %s", err)
@@ -125,6 +144,22 @@ func main() {
 	fmt.Printf("* Directory for apps: %s\n", dir)
 	fmt.Printf("* Domains: %s\n", strings.Join(domains, ", "))
 	fmt.Printf("* DNS Server port: %d\n", *fPort)
+
+	ehttpport, defined := os.LookupEnv("PUMA_DEV_HTTP_PORT")
+	if defined {
+		*fHTTPPort, err = strconv.Atoi(ehttpport)
+		if err != nil {
+			log.Fatalf("Invalid value %s for PUMA_DEV_HTTP_PORT", ehttpport)
+		}
+	}
+
+	etlsport, defined := os.LookupEnv("PUMA_DEV_TLS_PORT")
+	if defined {
+		*fTLSPort, err = strconv.Atoi(etlsport)
+		if err != nil {
+			log.Fatalf("Invalid value %s for PUMA_DEV_TLS_PORT", etlsport)
+		}
+	}
 
 	if *fLaunch {
 		fmt.Printf("* HTTP Server port: inherited from launchd\n")
