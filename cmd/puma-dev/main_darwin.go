@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -10,20 +9,22 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/namsral/flag"
 	"github.com/puma/puma-dev/dev"
 	"github.com/puma/puma-dev/homedir"
 )
 
 var (
-	fDebug    = flag.Bool("debug", false, "enable debug output")
-	fDomains  = flag.String("d", "dev", "domains to handle, separate with :")
-	fPort     = flag.Int("dns-port", 9253, "port to listen on dns for")
-	fHTTPPort = flag.Int("http-port", 9280, "port to listen on http for")
-	fTLSPort  = flag.Int("https-port", 9283, "port to listen on https for")
-	fDir      = flag.String("dir", "~/.puma-dev", "directory to watch for apps")
-	fTimeout  = flag.Duration("timeout", 15*60*time.Second, "how long to let an app idle for")
-	fPow      = flag.Bool("pow", false, "Mimic pow's settings")
-	fLaunch   = flag.Bool("launchd", false, "Use socket from launchd")
+	fs        = flag.NewFlagSetWithEnvPrefix(os.Args[0], "PUMA_DEV", 0)
+	fDebug    = fs.Bool("debug", false, "enable debug output")
+	fDomains  = fs.String("d", "dev", "domains to handle, separate with :")
+	fPort     = fs.Int("dns-port", 9253, "port to listen on dns for")
+	fHTTPPort = fs.Int("http-port", 9280, "port to listen on http for")
+	fTLSPort  = fs.Int("https-port", 9283, "port to listen on https for")
+	fDir      = fs.String("dir", "~/.puma-dev", "directory to watch for apps")
+	fTimeout  = fs.Duration("timeout", 15*60*time.Second, "how long to let an app idle for")
+	fPow      = fs.Bool("pow", false, "Mimic pow's settings")
+	fLaunch   = fs.Bool("launchd", false, "Use socket from launchd")
 
 	fSetup = flag.Bool("setup", false, "Run system setup")
 	fStop  = flag.Bool("stop", false, "Stop all puma-dev servers")
@@ -37,7 +38,7 @@ var (
 )
 
 func main() {
-	flag.Parse()
+	parseFlags()
 
 	allCheck()
 

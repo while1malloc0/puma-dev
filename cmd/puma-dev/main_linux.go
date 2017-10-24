@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -10,23 +9,25 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/namsral/flag"
 	"github.com/puma/puma-dev/dev"
 	"github.com/puma/puma-dev/homedir"
 )
 
 var (
-	fDebug    = flag.Bool("debug", false, "enable debug output")
-	fDomains  = flag.String("d", "dev", "domains to handle, separate with :")
-	fHTTPPort = flag.Int("http-port", 9280, "port to listen on http for")
-	fTLSPort  = flag.Int("https-port", 9283, "port to listen on https for")
-	fSysBind  = flag.Bool("sysbind", false, "bind to ports 80 and 443")
-	fDir      = flag.String("dir", "~/.puma-dev", "directory to watch for apps")
-	fTimeout  = flag.Duration("timeout", 15*60*time.Second, "how long to let an app idle for")
+	fs        = flag.NewFlagSetWithEnvPrefix(os.Args[0], "PUMA_DEV", 0)
+	fDebug    = fs.Bool("debug", false, "enable debug output")
+	fDomains  = fs.String("d", "dev", "domains to handle, separate with :")
+	fHTTPPort = fs.Int("http-port", 9280, "port to listen on http for")
+	fTLSPort  = fs.Int("https-port", 9283, "port to listen on https for")
+	fSysBind  = fs.Bool("sysbind", false, "bind to ports 80 and 443")
+	fDir      = fs.String("dir", "~/.puma-dev", "directory to watch for apps")
+	fTimeout  = fs.Duration("timeout", 15*60*time.Second, "how long to let an app idle for")
 	fStop     = flag.Bool("stop", false, "Stop all puma-dev servers")
 )
 
 func main() {
-	flag.Parse()
+	parseFlags()
 
 	allCheck()
 

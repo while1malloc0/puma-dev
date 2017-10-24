@@ -1,10 +1,11 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"runtime"
+
+	"github.com/namsral/flag"
 )
 
 var fVersion = flag.Bool("V", false, "display version info")
@@ -36,4 +37,9 @@ func init() {
 
 		fmt.Fprintf(os.Stderr, "\nAvailable subcommands: link\n")
 	}
+}
+
+func parseFlags() {
+	flag.Parse()
+	fs.Parse(os.Args[1:])
 }
