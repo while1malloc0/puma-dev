@@ -40,6 +40,8 @@ func init() {
 }
 
 func parseFlags() {
+	// Parse flags that don't have environment variables attached to them as
+	// well as those that do
 	flag.Parse()
 	fs.Parse(os.Args[1:])
 }
